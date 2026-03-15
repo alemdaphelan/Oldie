@@ -1,0 +1,27 @@
+services:
+  oldie-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    container_name: oldie_postgres
+    environment:
+      POSTGRES_DB: oldie_db
+      POSTGRES_USER: alem
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - oldie_db_data:/var/lib/postgresql/data
+  oldie-backend:
+    build: .
+    restart: unless-stopped
+    container_name: oldie_app
+    depends_on:
+      - oldie-db
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://oldie-db:5432/oldie_db
+      SPRING_DATASOURCE_USERNAME: alem
+      SPRING_DATASOURCE_PASSWORD: 123
+volumes:
+  oldie_db_data:

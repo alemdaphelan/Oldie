@@ -1,0 +1,13 @@
+#library
+dist/
+build/
+target/
+.mvn/
+
+.env
+.env.*
+*.pem
+
+.idea/
+.vscode/
+.DS_Store
