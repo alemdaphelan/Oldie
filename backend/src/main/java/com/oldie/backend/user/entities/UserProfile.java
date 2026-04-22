@@ -8,59 +8,51 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_profiles")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UserProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_profile_id", nullable = false, updatable = false)
-    private Long userProfileId;
-    
+    private UUID userProfileId;
+
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
-    
+
     @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
-    
+
     @Column(name = "avatar_url", nullable = true)
     private String avatarUrl;
-    
-    @Column(name = "bio", nullable = true, length = 500)    
+
+    @Column(name = "bio", nullable = true, length = 500)
     private String bio;
-    
+
     @Builder.Default
     @Column(name = "reputation_score", nullable = false)
     private Integer reputationScore = 0;
-    
+
     @Builder.Default
     @Column(name = "total_reviews", nullable = false)
     private Integer totalReviews = 0;
-    
+
     @Builder.Default
     @Column(name = "success_trades", nullable = false)
     private Integer successTrades = 0;
-    
-    @Column(name = "city_id", nullable = false, updatable = false)
-    private Long cityId;
-    
-    @Column(name = "district_id", nullable = false, updatable = false)
-    private Long districtId;
-    
-    @Column(name = "ward_id", nullable = false, updatable = false)
-    private Long wardId;
-    
+
     @Column(name = "address_detail", nullable = true)
     private String addressDetail;
-    
+
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;

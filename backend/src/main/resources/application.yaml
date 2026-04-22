@@ -2,11 +2,12 @@ spring:
   application:
     name: backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/oldie_db
-    username: alem
-    password: 123
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:your_default_db_name}
+    username: ${POSTGRES_USERNAME:your_default_username}
+    password: ${POSTGRES_PASSWORD:your_default_password}
     driver-class-name: org.postgresql.Driver
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -14,5 +15,9 @@ spring:
       hibernate:
         format_sql: true
     open-in-view: false
+jwt:
+  secret: ${JWT_SECRET_KEY:your_default_jwt_secret_key}
+  expiration: 86400000
+  
 server:
-  port: 0
+  port: 8080

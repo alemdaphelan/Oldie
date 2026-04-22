@@ -7,6 +7,7 @@ import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
@@ -16,18 +17,18 @@ import lombok.*;
 @AllArgsConstructor
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "category_id", nullable = false, updatable = false)
-    private Long categoryId;
+    private UUID categoryId;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name ="slug", nullable = false, unique = true)
+    @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name="attributes_schema", nullable = false, columnDefinition = "jsonb")
+    @Column(name = "attributes_schema", nullable = false, columnDefinition = "jsonb")
     private Map<String, Object> attributesSchema;
 
     @ManyToOne(fetch = FetchType.LAZY)

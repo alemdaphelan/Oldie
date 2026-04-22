@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Document(collection = "listings")
 @Builder
@@ -18,14 +19,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class Listing {
     @Id
-    @Field("listing_id")
-    private String listingId;
+    private UUID listingId;
 
     @Field("user_id")
-    private String userId;
+    private UUID userId;
 
     @Field("category_id")
-    private String categoryId;
+    private UUID categoryId;
 
     private String title;
     private String description;
@@ -43,9 +43,9 @@ public class Listing {
     @Field("listing_status")
     private String listingStatus = "IN_STOCK";
 
-    private String city;
-    private String district;
-    private String ward;
+    private UUID city;
+    private UUID district;
+    private UUID ward;
     private String address;
 
     @Builder.Default

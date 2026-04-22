@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "likes")
@@ -15,9 +16,9 @@ import java.time.LocalDateTime;
 @Builder
 public class Like {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "like_id", nullable = false, updatable = false)
-    private Long likeId;
+    private UUID likeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "liker_id", nullable = false)

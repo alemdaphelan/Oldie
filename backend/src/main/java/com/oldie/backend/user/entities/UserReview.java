@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_reviews")
@@ -15,9 +16,9 @@ import java.time.LocalDateTime;
 @Builder
 public class UserReview {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "review_id", nullable = false, updatable = false)
-    private Long reviewId;
+    private UUID reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
@@ -28,7 +29,7 @@ public class UserReview {
     private User reviewee;
 
     @Column(name = "listing_id", nullable = false)
-    private String listingId;
+    private UUID listingId;
 
     @Column(name = "content", nullable = true, length = 500)
     private String content;

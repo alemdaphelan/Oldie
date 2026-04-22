@@ -4,12 +4,19 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Document(collection = "conversations")
+@CompoundIndexes({
+        @CompoundIndex(name = "userId_idx", def = "{'participant_ids': 1,'updated_at: -1'}"),
+        @CompoundIndex(name = "listing_participant_idx", def = "{'listing_id': 1, 'participant_ids' : 1}")
+})
 @Builder
 @Getter
 @Setter
@@ -17,20 +24,16 @@ import java.util.List;
 @AllArgsConstructor
 public class Conversation {
     @Id
-    @Field("conversation_id")
-    private String conversationId;
-
-    @Field("user_ids")
-    private List<String> userIds;
+    private UUID conversationId;
 
     @Field("listing_id")
-    private String listingId;
+    private UUID listingId;
 
     @Field("type")
     private String type; // e.g., "INQUIRY", "NEGOTIATION", "POST_SALE"
 
     @Field("participant_ids")
-    private List<String> participantIds;
+    private List<UUID> participantIds;
 
     @Field("last_message")
     private String lastMessage;
