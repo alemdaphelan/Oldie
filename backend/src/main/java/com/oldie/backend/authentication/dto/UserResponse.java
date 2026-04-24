@@ -25,7 +25,8 @@ public class UserResponse {
     private String addressDetail;
     private Integer followerCount;
     private Integer followingCount;
+    private String token;
 
     @Builder.Default
-    private Boolean isProfileSetUp = false;
+    private Boolean isSetProfile = false;
 }

@@ -1,7 +1,6 @@
 package com.oldie.backend.authentication;
 
 import com.oldie.backend.user.entities.User;
-import com.oldie.backend.user.entities.UserProfile;
 import com.oldie.backend.authentication.dto.RegisterRequest;
 import com.oldie.backend.authentication.dto.UserMapper;
 import com.oldie.backend.authentication.dto.LoginRequest;
@@ -30,7 +29,8 @@ class AuthService {
     private final DistrictRepository districtRepository;
     private final WardRepository wardRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper UserMapper;
+    private final UserMapper userMapper;
+    private final JwtService jwtService;
 
     UserResponse login(LoginRequest request) {
         String email = request.getEmail();
@@ -43,8 +43,17 @@ class AuthService {
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
-        UserProfile userProfile = user.get().getUserProfile();
-        UserResponse userResponse = UserMapper.toUserResponse(userProfile);
+        UserResponse userResponse;
+        if (user.get().getIsSetProfile() == false) {
+            userResponse = UserResponse.builder()
+                    .userId(user.get().getUserId())
+                    .email(user.get().getEmail())
+                    .build();
+        } else {
+            userResponse = userMapper.toUserResponse(user.get().getUserProfile());
+        }
+        userResponse.setToken(jwtService.generateToken(user.get().getUserId(), user.get().getEmail(),
+                user.get().getRole()));
         return userResponse;
     }
 
@@ -73,35 +82,11 @@ class AuthService {
         return UserResponse.builder()
                 .userId(newUser.getUserId())
                 .email(newUser.getEmail())
-                .isProfileSetUp(false)
+                .token(jwtService.generateToken(newUser.getUserId(), newUser.getEmail(), newUser.getRole()))
                 .build();
     }
 
-    UserResponse setProfile(UserResponse request) {
-        Optional<User> userOpt = userRepository.findById(request.getUserId());
-        if (userOpt.isEmpty()) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
-        User user = userOpt.get();
-        UserProfile userProfile = user.getUserProfile();
-        if (userProfile == null) {
-            userProfile = new UserProfile();
-            userProfile.setUser(user);
-        }
-        userProfile.setFirstName(request.getFirstName());
-        userProfile.setLastName(request.getLastName());
-        userProfile.setAvatarUrl(request.getAvatarUrl());
-        userProfile.setBio(request.getBio());
-        userProfile.setReputationScore(Integer.parseInt(request.getReputationScore()));
-        userProfile.setTotalReviews(Integer.parseInt(request.getTotalReviews()));
-        userProfile.setSuccessTrades(Integer.parseInt(request.getSuccessTrades()));
-        userProfile.setAddressDetail(request.getAddressDetail());
-        userProfile.setFollowerCount(request.getFollowerCount());
-        userProfile.setFollowingCount(request.getFollowingCount());
-        userRepository.save(user);
-
-        UserResponse response = UserMapper.toUserResponse(userProfile);
-        response.setIsProfileSetUp(true);
-        return response;
+    UserResponse oauth(String providerName) {
+        return null;
     }
 }
