@@ -27,5 +27,5 @@ public class UserResponse {
     private Integer followingCount;
 
     @Builder.Default
-    private Boolean isAuth = true;
+    private Boolean isProfileSetUp = false;
 }

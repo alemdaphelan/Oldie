@@ -10,12 +10,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +29,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -43,29 +46,35 @@ public class User {
     @Column(nullable = true)
     private String password;
 
+    @Builder.Default
     @Column(nullable = false, length = 10)
-    private String role;
+    private String role = "USER";
 
     @Column(name = "phone_number", nullable = false, length = 15)
     private String phoneNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false, updatable = true)
     private City city;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "district_id", nullable = false, updatable = true)
     private District district;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ward_id", nullable = false, updatable = true)
     private Ward ward;
 
+    @Builder.Default
     @Column(name = "verified_level", nullable = false)
-    private Integer verifiedLevel;
+    private Integer verifiedLevel = 0;
 
+    @Builder.Default
     @Column(name = "user_status", nullable = false, length = 10)
-    private String userStatus;
+    private String userStatus = "ACTIVE";
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private UserProfile userProfile;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp

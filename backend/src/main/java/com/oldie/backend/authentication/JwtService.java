@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.io.Decoders;
 import jakarta.annotation.PostConstruct;
 
 import java.util.Date;
-import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class JwtService {
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 

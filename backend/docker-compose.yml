@@ -2,11 +2,13 @@ services:
   oldie-db:
     image: postgres:16-alpine
     restart: unless-stopped
+    env_file:
+      - .env
     container_name: oldie_postgres
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USERNAME}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-your_default_postgres_db_name}
+      POSTGRES_USER: ${POSTGRES_USERNAME:-your_default_postgres_username}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your_default_postgres_password}
     ports:
       - "5432:5432"
     volumes:
@@ -16,14 +18,42 @@ services:
     restart: unless-stopped
     container_name: oldie_app
     depends_on:
-      - oldie-db
+      oldie-db:
+        condition: service_started
+      mongo-oldie:
+        condition: service_healthy
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://oldie-db:5432/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USERNAME}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_DATASOURCE_URL: ${POSTGRES_URL}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USERNAME:-your_default_postgres_username}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-your_default_postgres_password}
+      SPRING_DATA_MONGODB_URI: ${SPRING_MONGODB_URI:-mongodb://alem:123@mongo-oldie:27017/mongo_oldie_db?authSource=admin}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+
+  mongo-oldie:
+    image: mongo:latest
+    container_name: mongo_oldie
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-your_default_mongo_username}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-your_default_mongo_password}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-your_default_mongo_db_name}
+    volumes:
+      - mongo_oldie_data:/data/db
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 volumes:
   oldie_db_data:
+  mongo_oldie_data:

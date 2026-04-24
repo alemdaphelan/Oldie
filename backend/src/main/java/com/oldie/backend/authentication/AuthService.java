@@ -1,7 +1,9 @@
 package com.oldie.backend.authentication;
 
 import com.oldie.backend.user.entities.User;
+import com.oldie.backend.user.entities.UserProfile;
 import com.oldie.backend.authentication.dto.RegisterRequest;
+import com.oldie.backend.authentication.dto.UserMapper;
 import com.oldie.backend.authentication.dto.LoginRequest;
 import com.oldie.backend.user.UserRepository;
 import com.oldie.backend.authentication.dto.UserResponse;
@@ -28,6 +30,7 @@ class AuthService {
     private final DistrictRepository districtRepository;
     private final WardRepository wardRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper UserMapper;
 
     UserResponse login(LoginRequest request) {
         String email = request.getEmail();
@@ -40,7 +43,9 @@ class AuthService {
         if (!passwordEncoder.matches(password, user.get().getPassword())) {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
-        return UserResponse.builder().build();
+        UserProfile userProfile = user.get().getUserProfile();
+        UserResponse userResponse = UserMapper.toUserResponse(userProfile);
+        return userResponse;
     }
 
     UserResponse register(RegisterRequest request) {
@@ -68,7 +73,35 @@ class AuthService {
         return UserResponse.builder()
                 .userId(newUser.getUserId())
                 .email(newUser.getEmail())
-                .isAuth(false)
+                .isProfileSetUp(false)
                 .build();
+    }
+
+    UserResponse setProfile(UserResponse request) {
+        Optional<User> userOpt = userRepository.findById(request.getUserId());
+        if (userOpt.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        User user = userOpt.get();
+        UserProfile userProfile = user.getUserProfile();
+        if (userProfile == null) {
+            userProfile = new UserProfile();
+            userProfile.setUser(user);
+        }
+        userProfile.setFirstName(request.getFirstName());
+        userProfile.setLastName(request.getLastName());
+        userProfile.setAvatarUrl(request.getAvatarUrl());
+        userProfile.setBio(request.getBio());
+        userProfile.setReputationScore(Integer.parseInt(request.getReputationScore()));
+        userProfile.setTotalReviews(Integer.parseInt(request.getTotalReviews()));
+        userProfile.setSuccessTrades(Integer.parseInt(request.getSuccessTrades()));
+        userProfile.setAddressDetail(request.getAddressDetail());
+        userProfile.setFollowerCount(request.getFollowerCount());
+        userProfile.setFollowingCount(request.getFollowingCount());
+        userRepository.save(user);
+
+        UserResponse response = UserMapper.toUserResponse(userProfile);
+        response.setIsProfileSetUp(true);
+        return response;
     }
 }

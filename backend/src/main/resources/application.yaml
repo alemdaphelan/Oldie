@@ -1,8 +1,11 @@
 spring:
   application:
     name: backend
+  data:
+    mongodb:
+      uri: ${SPRING_MONGODB_URI}
   datasource:
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:your_default_db_name}
+    url: ${POSTGRES_URL}
     username: ${POSTGRES_USERNAME:your_default_username}
     password: ${POSTGRES_PASSWORD:your_default_password}
     driver-class-name: org.postgresql.Driver

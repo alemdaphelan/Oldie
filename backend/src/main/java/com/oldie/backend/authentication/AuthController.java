@@ -28,6 +28,12 @@ class AuthController {
         return ResponseEntity.status(201).body(ApiResponse.success(response));
     }
 
+    @PostMapping("/register/set-profile")
+    public ResponseEntity<ApiResponse<UserResponse>> setProfile(@Valid @RequestBody UserResponse request) {
+        UserResponse response = authService.setProfile(request);
+        return ResponseEntity.status(200).body(ApiResponse.success(response));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserResponse>> login(@Valid @RequestBody LoginRequest request) {
         UserResponse response = authService.login(request);
